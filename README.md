@@ -13,7 +13,13 @@ docker run --name go-json-schema-server -d -p 8080:8080 go-json-schema-server
 ### Run the current project
 ```shell
 
-git clone 
+https://github.com/maocatooo/GoJsonSchemaServer.git
+
+cd GoJsonSchemaServer
+
+go mod test 
+
+go run .
 
 ```
 
