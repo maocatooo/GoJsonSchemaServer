@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <title>gojsonschemaserver</title>
+</head>
+<body class="h-screen bg-gray-100 p-4">
+<div class="flex h-full justify-center">
+    <!-- 左侧 Textarea -->
+    <div class=" w-5/12 m-4">
+        <label for="body" class="block text-sm font-medium text-gray-700">input</label>
+        <textarea id="body" name="body" rows="4" class="block h-5/6 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"></textarea>
+    </div>
+
+    <!-- 中间 Input 和 提交按钮 -->
+    <div class="w-2/12 m-4 p-4">
+        <label for="struct" class="block text-sm font-medium text-gray-700">struct name</label>
+        <input type="text" id="struct" name="struct" class="block w-full rounded-md border p-2  border-gray-300 focus:border-blue-500 focus:outline-none" />
+        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="postData()">submit</button>
+        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="clearData()">clear</button>
+    </div>
+
+    <!-- 右侧 Textarea -->
+    <div class="w-5/12 m-4 p-4">
+        <label for="result" class="block text-sm font-medium text-gray-700">output</label>
+        <textarea id="result" name="result" rows="4" class=" block h-5/6 w-full p-2  rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none"></textarea>
+    </div>
+</div>
+<script>
+
+    let body = document.querySelector('#body');
+    let struct = document.querySelector('#struct');
+    let result = document.querySelector('#result');
+
+    body.value = `
+type html struct {
+    Head struct {
+        Title string \`json:"title"\` // this is title
+    } \`json:"head"\` // this is head
+    Body Body \`json:"body"\` // this is body
+}
+
+type Body struct {
+    Div int \`json:"div"\` // this is div
+}
+`
+    struct.value = "html"
+
+
+
+    function clearData() {
+        body.value = ""
+        struct.value = ""
+        result.value = ""
+    }
+
+    function postData() {
+        // 准备要发送的数据，这里以JSON格式为例
+        var data = {
+            body: body.value,
+            struct: struct.value
+        };
+
+        // 使用Fetch API发送POST请求
+        fetch('/action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // 将数据转换为JSON字符串并作为请求体发送
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                // 请求成功，处理返回的数据
+                console.log(data)
+                result.value = data;
+            })
+            .catch(error => {
+                // 请求失败，处理错误
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+</script>
+
+</body>
+</html>
