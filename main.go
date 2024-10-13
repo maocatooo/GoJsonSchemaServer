@@ -114,14 +114,3 @@ func main() {
 	fmt.Println("server start at 8080")
 	http.ListenAndServe(":8080", nil)
 }
-
-type html struct {
-	Head struct {
-		Title string `json:"title"` // this is title
-	} `json:"head"` // this is head
-	Body Body `json:"body"` // this is body
-}
-
-type Body struct {
-	Div int `json:"div"` // this is div
-}

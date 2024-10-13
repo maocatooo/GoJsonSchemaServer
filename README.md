@@ -6,18 +6,21 @@ This is an HTTP server designed to generate JsonSchema from Golang structs.
 
 **Deployment of this project should be done within Docker, as it relies on the Golang runtime and may pose risks or vulnerabilities otherwise.**
 ```shell
+git clone https://github.com/maocatooo/GoJsonSchemaServer.git
+
+cd GoJsonSchemaServer
+
 docker build -t go-json-schema-server . 
 
 docker run --name go-json-schema-server -d -p 8080:8080 go-json-schema-server
 ```
 ### Run the current project
 ```shell
-
-https://github.com/maocatooo/GoJsonSchemaServer.git
+git clone https://github.com/maocatooo/GoJsonSchemaServer.git
 
 cd GoJsonSchemaServer
 
-go mod test 
+go mod tidy 
 
 go run .
 

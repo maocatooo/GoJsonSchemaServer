@@ -4,58 +4,102 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-    <title>gojsonschemaserver</title>
+    <title>Tailwind Example1</title>
 </head>
-<body class="h-screen bg-gray-100 p-4">
-<div class="flex h-full justify-center">
+<body class="h-max bg-gray-100 p-8">
+<div class="flex h-screen  justify-center">
     <!-- 左侧 Textarea -->
-    <div class=" w-5/12 m-4">
-        <label for="body" class="block text-sm font-medium text-gray-700">input</label>
-        <textarea id="body" name="body" rows="4" class="block h-5/6 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"></textarea>
-    </div>
-
-    <!-- 中间 Input 和 提交按钮 -->
-    <div class="w-2/12 m-4 p-4">
-        <label for="struct" class="block text-sm font-medium text-gray-700">struct name</label>
-        <input type="text" id="struct" name="struct" class="block w-full rounded-md border p-2  border-gray-300 focus:border-blue-500 focus:outline-none" />
-        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="postData()">submit</button>
-        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="clearData()">clear</button>
-    </div>
-
-    <!-- 右侧 Textarea -->
-    <div class="w-5/12 m-4 p-4">
-        <label for="result" class="block text-sm font-medium text-gray-700">output</label>
-        <textarea id="result" name="result" rows="4" class=" block h-5/6 w-full p-2  rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none"></textarea>
-    </div>
-</div>
-<script>
-
-    let body = document.querySelector('#body');
-    let struct = document.querySelector('#struct');
-    let result = document.querySelector('#result');
-
-    body.value = `
+    <div class="w-5/12 pr-4">
+        <label for="body" class="block text-sm font-medium text-gray-700">Textarea 1</label>
+        <textarea id="body" name="body" rows="4" class="h-4/6 mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none">
 type html struct {
     Head struct {
-        Title string \`json:"title"\` // this is title
-    } \`json:"head"\` // this is head
-    Body Body \`json:"body"\` // this is body
+        Title string `json:"title"` // this is title
+    } `json:"head"` // this is head
+    Body Body `json:"body"` // this is body
 }
 
 type Body struct {
-    Div int \`json:"div"\` // this is div
+    // this is div
+    Div int `json:"div"`
 }
-`
-    struct.value = "html"
+        </textarea>
+
+        <div id="template">
+
+        </div>
+    </div>
+
+    <!-- 中间 Input 和 提交按钮 -->
+    <div class="w-2/12 px-4">
+        <label for="struct" class="block text-sm font-medium text-gray-700">struct name</label>
+        <input type="text" id="struct" name="struct" class="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none" value="html" />
+        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="postData()">Submit</button>
+        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="addTemplate()">AddNewTemplate</button>
+        <button class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none" onclick="deleteTemplate()">DeleteLastTemplate</button>
+    </div>
+
+    <!-- 右侧 Textarea -->
+    <div class="w-5/12 pl-4">
+        <label for="result" class="block text-sm font-medium text-gray-700">generate results</label>
+        <textarea id="result" name="result" rows="4" class="h-4/6 mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"></textarea>
+    </div>
+</div>
 
 
+<script>
+    let body = document.querySelector('#body');
+    let struct = document.querySelector('#struct');
+    const templateDiv = document.getElementById('template');
+    const templateKey = "templateKey"
+    window.onload = function() {
+        console.log('Page fully loaded');
+        let res = localStorage.getItem(templateKey)
+        res = JSON.parse(res || "[]")
+        res.map((item,index)=>{
+            addTemplateBtn(item,index)
+        })
+    };
+    function  addTemplateBtn(value, index) {
+        const button = document.createElement('button');
+        button.textContent = "template"+index;
+        button.className = "mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:outline-none"
+        // 绑定点击事件
+        button.addEventListener('click', ()=>{
+            body.value = value
+        });
 
-    function clearData() {
-        body.value = ""
-        struct.value = ""
-        result.value = ""
+        // 添加按钮到 template div
+        templateDiv.appendChild(button);
     }
 
+    function deleteTemplate(){
+        let res = localStorage.getItem(templateKey)
+        res = JSON.parse(res || "[]")
+        if (res.length===0){
+            return
+        }
+        res.pop()
+        localStorage.setItem(templateKey, JSON.stringify(res))
+        const lastButton = templateDiv.lastElementChild;
+        if (lastButton) {
+            templateDiv.removeChild(lastButton);
+        } else {
+            alert('No buttons left to remove!');
+        }
+    }
+
+    function addTemplate(){
+        let bodyValue = document.querySelector('#body').value;
+        if (bodyValue.trim().length ===0){
+            return
+        }
+        let res = localStorage.getItem(templateKey)
+        res = JSON.parse(res || "[]")
+        res.push(bodyValue)
+        localStorage.setItem(templateKey, JSON.stringify(res))
+        addTemplateBtn(bodyValue, res.length)
+    }
     function postData() {
         // 准备要发送的数据，这里以JSON格式为例
         var data = {
@@ -81,7 +125,7 @@ type Body struct {
             .then(data => {
                 // 请求成功，处理返回的数据
                 console.log(data)
-                result.value = data;
+                document.querySelector('#result').value = data;
             })
             .catch(error => {
                 // 请求失败，处理错误
